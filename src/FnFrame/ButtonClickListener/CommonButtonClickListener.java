@@ -9,6 +9,9 @@ import FnFrame.FnCollection.updatePackage.updateUI;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * 用于创建按钮点击事件监听器的类
+ */
 public class CommonButtonClickListener{
     public static ActionListener createDeleteButtonListener(){
         return new ActionListener() {

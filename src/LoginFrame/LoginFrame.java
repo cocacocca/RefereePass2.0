@@ -5,16 +5,15 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import util.JDBCUtils;
-
 import FnFrame.FnFrame;
 public class LoginFrame extends JFrame {
-    private JTextField usernameField;
-    private JPasswordField passwordField;
+    private final JTextField usernameField;
+    private final JPasswordField passwordField;
 
     public LoginFrame() {
+        //设定窗体属性
         setTitle("裁判通");
-        setSize(400, 200);
+        setSize(300, 150);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -48,11 +47,11 @@ public class LoginFrame extends JFrame {
                 login();
             }
         });
-        // 创建登录按钮面板
+        //创建登录按钮面板
         JPanel loginButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         loginButtonPanel.add(loginButton);
 
-        // 创建退出按钮
+        //创建退出按钮
         JButton exitButton = new JButton("退出");
         exitButton.addActionListener(new ActionListener() {
             @Override
@@ -60,22 +59,26 @@ public class LoginFrame extends JFrame {
                 System.exit(0);
             }
         });
-        // 创建退出按钮面板
+        //创建退出按钮面板
         JPanel exitButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         exitButtonPanel.add(exitButton);
 
-        // 添加登录面板和登录按钮面板到主面板的左侧,登录面板的底部
+        //添加登录面板和登录按钮面板到主面板的左侧,登录面板的底部
         mainPanel.add(loginPanel, BorderLayout.PAGE_START);
         mainPanel.add(loginButtonPanel, BorderLayout.WEST);
         mainPanel.add(exitButtonPanel, BorderLayout.EAST);
 
-        // 将主面板添加到窗体
+        //将主面板添加到窗体
         add(mainPanel);
 
-        // 显示窗体
+        //显示窗体
         setVisible(true);
     }
 
+
+    /**
+     * 登录方法，用于处理用户输入的用户名和密码，并进行登录验证
+     */
     private void login() {
         int loginPassCode;
 
@@ -102,10 +105,16 @@ public class LoginFrame extends JFrame {
         }
     }
 
-
+    /**
+     * 检查登录信息的方法，用于验证输入的用户名和密码是否正确
+     *
+     * @param username 用户名
+     * @param password 密码
+     * @return 登录验证结果，1表示成功，0表示失败
+     */
     private int checkLogin(String username, String password) {
         //设定一个状态值
-        int detectLoginStatus = 0;
+        int detectLoginStatus;
         //判定输入
         if ("cocacocca".equals(username) && "coca915917282".equals(password)) {
             JOptionPane.showMessageDialog(this, "登录成功！");//显示Dialog
@@ -117,18 +126,20 @@ public class LoginFrame extends JFrame {
         }
     }
 
-    //清除登录失败时的输入
+    /**
+     * 清除登录失败时的输入，将用户名和密码字段置为空
+     */
     private void clearFields() {
         usernameField.setText("");
         passwordField.setText("");
     }
 
-//    public static void main(String[] args) {
-//        SwingUtilities.invokeLater(new Runnable() {
-//            @Override
-//            public void run() {
-//                new LoginFrame();
-//            }
-//        });
-//    }
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new LoginFrame();
+            }
+        });
+    }
 }

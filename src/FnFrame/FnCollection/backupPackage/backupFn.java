@@ -1,12 +1,8 @@
-package FnFrame.FnCollection;
+package FnFrame.FnCollection.backupPackage;
 
-import FnFrame.ButtonClickListenerImplements.CommonButtonClickListener;
 import util.JDBCUtils;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,94 +11,41 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * 备份数据的功能逻辑
+ */
 public class backupFn extends JFrame {
-    private ButtonGroup radioButtonGroup;
-    private JRadioButton athletesRadioButton;
-    private JRadioButton refereeRadioButton;
-
-    public void backupFnWinodw(){
-        setTitle("数据备份");
-        setSize(800,600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-
-        //创建backupFn面板
-        JPanel backupFnPanel = new JPanel();
-        backupFnPanel.setLayout(new BorderLayout());
-
-        //构建第一行按钮面板
-        JPanel buttonPanel = createButtonPanel();
-        backupFnPanel.add(buttonPanel, BorderLayout.NORTH);
-
-        //构建第二行单选框和备份按钮
-        JPanel dataPanel = createOptionPanel();
-        backupFnPanel.add(dataPanel, BorderLayout.CENTER);
-
-        add(backupFnPanel);
-
-        setVisible(true);
-    }
-
-    private JPanel createButtonPanel() {
-        JPanel buttonPanel = new JPanel();
-        JButton deleteButton = new JButton("删除数据");
-        JButton updateButton = new JButton("修改数据");
-        JButton selectButton = new JButton("查询数据");
-        JButton addButton = new JButton("添加数据");
-
-        buttonPanel.add(deleteButton);
-        buttonPanel.add(updateButton);
-        buttonPanel.add(selectButton);
-        buttonPanel.add(addButton);
-
-        // 添加按钮点击事件监听器
-        deleteButton.addActionListener(CommonButtonClickListener.createDeleteButtonListener());
-        updateButton.addActionListener(CommonButtonClickListener.createUpdateButtonListener());
-        selectButton.addActionListener(CommonButtonClickListener.createSelectButtonListener());
-        addButton.addActionListener(CommonButtonClickListener.createAddButtonListener());
-
-
-        return buttonPanel;
-    }
-
-    private JPanel createOptionPanel() {
-        JPanel optionPanel = new JPanel();
-        radioButtonGroup = new ButtonGroup();
-        athletesRadioButton = new JRadioButton("Athletes");
-        refereeRadioButton = new JRadioButton("Referees");
-        JButton backupButton = new JButton("备份");
-
-        //添加备份按钮点击事件监听器
-        backupButton.addActionListener(e -> backupData());
-
-        // 将单选框和搜索框添加到面板
-        radioButtonGroup.add(athletesRadioButton);
-        radioButtonGroup.add(refereeRadioButton);
-        optionPanel.add(athletesRadioButton);
-        optionPanel.add(refereeRadioButton);
-        optionPanel.add(backupButton);
-
-        return optionPanel;
-    }
-
-    private void backupData(){
-        String selectedTable = athletesRadioButton.isSelected() ? "Athletes" : "Referees";
+    /**
+     * 备份数据的方法
+     */
+    protected void backupData(){
+        //获取用户选择的备份表
+        String selectedTable = backupUI.athletesRadioButton.isSelected() ? "Athletes" : "Referees";
 
         //获取用户选择的备份路径
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("选择备份文件保存路径");
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
+        //弹出文件选择器对话框
         int userSelection = fileChooser.showSaveDialog(this);
 
+        //如果用户选择了保存路径，备份数据
         if(userSelection == JFileChooser.APPROVE_OPTION){
             File selectedFile = fileChooser.getSelectedFile();
             String backupFilePath = selectedFile.getAbsolutePath();
 
+            //调用备份方法
             backupData(selectedTable, backupFilePath);
         }
     }
 
+    /**
+     * 备份数据库中的数据。
+     *
+     * @param tableName    数据库表名
+     * @param backupFilePath 备份文件路径
+     */
     private void backupData(String tableName, String backupFilePath){
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -136,9 +79,11 @@ public class backupFn extends JFrame {
                     rowData.append(rs.getString(i)).append(",");
                 }
 
+                //将rowData对象的字符串表示形式写入文件，并在末尾添加换行符
                 writer.write(rowData.toString() + "\n");
             }
 
+            //弹出提示框
             JOptionPane.showMessageDialog(this, "备份完成", "成功", JOptionPane.INFORMATION_MESSAGE);
 
 
@@ -155,10 +100,6 @@ public class backupFn extends JFrame {
                     e.printStackTrace();
                 }
             }
-
         }
-
-
     }
-
 }

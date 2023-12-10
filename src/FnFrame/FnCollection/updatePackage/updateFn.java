@@ -1,162 +1,68 @@
-package FnFrame.FnCollection;
+package FnFrame.FnCollection.updatePackage;
 
-import FnFrame.ButtonClickListenerImplements.CommonButtonClickListener;
 import util.JDBCUtils;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * 更新数据的功能逻辑
+ */
 public class updateFn extends JFrame {
-    private JTextField dataField;
-    private ButtonGroup radioButtonGroup;
-    private JRadioButton athletesRadioButton;
-    private JRadioButton refereeRadioButton;
-    private JTextField selectField;
-    private JTextArea dataTextArea;
 
-    public void updateFnWindow() {
-        setTitle("修改数据");
-        setSize(800, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+    /**
+     * 更新数据的方法
+     *
+     * @param dataTextArea 用于显示数据的文本区域
+     */
+    protected void updateData(JTextArea dataTextArea) {
 
-        //创建updateFn面板
-        JPanel updateFnPanel = new JPanel();
-        updateFnPanel.setLayout(new BorderLayout());
+        //获取选中的单选框（Athletes或Referees）
+        String selectedTable = updateUI.athletesRadioButton.isSelected() ? "Athletes" : "Referees";
+        //获取要更新的数据
+        String dataToUpdate = updateUI.dataField.getText();
 
-        //构建第一行按钮面板
-        JPanel buttonPanel = createButtonPanel();
-        updateFnPanel.add(buttonPanel, BorderLayout.NORTH);
-
-        //构建第二行单选框和搜索框面板
-        JPanel optionPanel = CreateOptionPanel();
-        updateFnPanel.add(optionPanel, BorderLayout.CENTER);
-
-        //构建第三行数据展示面板
-        JPanel dataPanel = createDataPanel();
-        updateFnPanel.add(dataPanel, BorderLayout.SOUTH);
-
-        add(updateFnPanel);
-
-        setVisible(true);
-    }
-
-    private JPanel CreateOptionPanel() {
-        JPanel optionPanel = new JPanel();
-        radioButtonGroup = new ButtonGroup();
-        athletesRadioButton = new JRadioButton("Athletes");
-        refereeRadioButton = new JRadioButton("Referees");
-        selectField = new JTextField(20);
-        JButton selectButton = new JButton("搜索");
-
-        // 添加搜索按钮点击事件监听器
-        selectButton.addActionListener(e -> refreshData());
-
-        // 将单选框和搜索框添加到面板
-        radioButtonGroup.add(athletesRadioButton);
-        radioButtonGroup.add(refereeRadioButton);
-        optionPanel.add(athletesRadioButton);
-        optionPanel.add(refereeRadioButton);
-        optionPanel.add(selectField);
-        optionPanel.add(selectButton);
-
-        //创建添加数据的面板
-        JPanel addDataPanel = createUpdateDataPanel();
-        optionPanel.add(addDataPanel);
-
-        return optionPanel;
-    }
-
-    private JPanel createButtonPanel() {
-        JPanel buttonPanel = new JPanel();
-        JButton deleteButton = new JButton("删除数据");
-        JButton addButton = new JButton("增加数据");
-        JButton selectButton = new JButton("查询数据");
-        JButton backupButton = new JButton("备份数据");
-
-        buttonPanel.add(deleteButton);
-        buttonPanel.add(addButton);
-        buttonPanel.add(selectButton);
-        buttonPanel.add(backupButton);
-
-        // 添加按钮点击事件监听器
-        deleteButton.addActionListener(CommonButtonClickListener.createDeleteButtonListener());
-        addButton.addActionListener(CommonButtonClickListener.createAddButtonListener());
-        selectButton.addActionListener(CommonButtonClickListener.createSelectButtonListener());
-        backupButton.addActionListener(CommonButtonClickListener.createBackUpButtonListener());
-
-
-        return buttonPanel;
-    }
-
-    private JPanel createDataPanel() {
-        JPanel dataPanel = new JPanel();
-        dataTextArea = new JTextArea();
-        JScrollPane scrollPane = new JScrollPane(dataTextArea);
-        scrollPane.setPreferredSize(new Dimension(600, 400));
-        dataPanel.add(scrollPane);
-        return dataPanel;
-    }
-
-    private JPanel createUpdateDataPanel() {
-        JPanel updateDataPanel = new JPanel();
-        JLabel dataLabel = new JLabel("更新数据:");
-
-        dataField = new JTextField(20);
-
-        JButton updateButton = new JButton("更新数据");
-
-        updateButton.addActionListener(e -> updateData());
-
-        updateDataPanel.add(dataLabel);
-        updateDataPanel.add(dataField);
-        updateDataPanel.add(updateButton);
-
-        return updateDataPanel;
-    }
-
-    private void updateData() {
-
-        // 获取选中的单选框（Athletes或Referees）
-        String selectedTable = athletesRadioButton.isSelected() ? "Athletes" : "Referees";
-        // 获取要更新的数据
-        String dataToUpdate = dataField.getText();
-
-        // 验证输入数据格式
+        //验证输入数据格式
         if (validateInput(selectedTable, dataToUpdate)) {
 
-            // 然后执行数据库更新操作
+            //然后执行数据库更新操作
             updateData(selectedTable, dataToUpdate);
 
-            // 刷新数据展示区域
-            refreshData();
+            //刷新数据展示区域
+            refreshData(dataTextArea);
         } else {
             JOptionPane.showMessageDialog(this, "输入数据格式错误！", "错误", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+    /**
+     * 更新数据库中的数据。
+     *
+     * @param tableName    数据库表名
+     * @param dataToUpdate 要更新的数据
+     */
     private void updateData(String tableName, String dataToUpdate) {
         Connection con = null;
         PreparedStatement pstmt = null;
 
         try {
-            // 获取数据库连接
+            //获取数据库连接
             con = JDBCUtils.getConnection();
 
-            // 根据选择的表进行不同的处理
+            //根据选择的表进行不同的处理
             if ("Athletes".equals(tableName) && validateInput(tableName, dataToUpdate)) {
-                // 如果是 Athletes 表，解析 data 为 id、name、gender、birthday、profession、enterDate、club
+
+                //如果是 Athletes 表，解析 data 为 id、name、gender、birthday、profession、enterDate、club
                 String[] athleteData = dataToUpdate.split(",");
 
-                // 使用预编译语句更新数据
+                //使用预编译语句更新数据
                 String sql = "UPDATE Athletes SET name=?, gender=?, birthday=?, profession=?, enterDate=?, club=? WHERE name=?";
                 pstmt = con.prepareStatement(sql);
+
+                //设置更新的值
                 pstmt.setString(1, athleteData[0].trim());  // name
                 pstmt.setString(2, athleteData[1].trim());  // gender
                 pstmt.setString(3, athleteData[2].trim());  // birthday
@@ -167,12 +73,15 @@ public class updateFn extends JFrame {
 
 
             } else if ("Referees".equals(tableName) && validateInput(tableName, dataToUpdate)) {
-                // 如果是 Referees 表，解析 data 为 id、name、gender、birthday、judgeField、judgeTimes
+
+                //如果是 Referees 表，解析 data 为 id、name、gender、birthday、judgeField、judgeTimes
                 String[] refereeData = dataToUpdate.split(",");
 
-                // 使用预编译语句更新数据
+                //使用预编译语句更新数据
                 String sql = "UPDATE Referees SET name=?, gender=?, birthday=?, judgeField=?, judgeTimes=? WHERE name=?";
                 pstmt = con.prepareStatement(sql);
+
+                //设置更新的值
                 pstmt.setString(1, refereeData[0].trim());  // name
                 pstmt.setString(2, refereeData[1].trim());  // gender
                 pstmt.setString(3, refereeData[2].trim());  // birthday
@@ -181,7 +90,7 @@ public class updateFn extends JFrame {
                 pstmt.setString(6, refereeData[5].trim());  // WHERE name
 
             } else {
-                // 输入数据格式不符合要求，弹出错误提示
+                //输入数据格式不符合要求，弹出错误提示
                 JOptionPane.showMessageDialog(this, "输入数据格式错误！", "错误", JOptionPane.ERROR_MESSAGE);
             }
 
@@ -191,12 +100,19 @@ public class updateFn extends JFrame {
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
-            // 关闭连接资源
+            //关闭连接资源
             JDBCUtils.close(con, pstmt, null);
         }
     }
 
 
+    /**
+     * 验证输入数据的格式是否正确。
+     *
+     * @param tableName 数据库表名
+     * @param data      要验证的数据
+     * @return 如果数据格式正确，则返回 true；否则返回 false
+     */
     private boolean validateInput(String tableName, String data) {
         // 移除输入数据的前导和尾随空格
         data = data.trim();
@@ -217,7 +133,12 @@ public class updateFn extends JFrame {
         return false;
     }
 
-    private void refreshData() {
+    /**
+     * 刷新数据展示区域的方法
+     *
+     * @param dataTextArea 用于显示数据的文本区域
+     */
+    protected void refreshData(JTextArea dataTextArea) {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -227,13 +148,13 @@ public class updateFn extends JFrame {
             con = JDBCUtils.getConnection();
 
             // 获取选中的单选框（Athletes或Referees）
-            String selectedTable = athletesRadioButton.isSelected() ? "Athletes" : "Referees";
+            String selectedTable = updateUI.athletesRadioButton.isSelected() ? "Athletes" : "Referees";
 
             // 构建查询语句
             String sql = "SELECT * FROM " + selectedTable;
 
             // 如果有搜索条件，则添加搜索条件
-            String searchText = selectField.getText().trim();
+            String searchText = updateUI.selectField.getText().trim();
             if (!searchText.isEmpty()) {
                 sql += " WHERE name LIKE '%" + searchText + "%'";
             }
