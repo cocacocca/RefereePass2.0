@@ -75,8 +75,8 @@ public class backupUI extends JFrame {
         JPanel optionPanel = new JPanel();
 
         ButtonGroup radioButtonGroup = new ButtonGroup();
-        JRadioButton athletesRadioButton = new JRadioButton("Athletes");
-        JRadioButton refereeRadioButton = new JRadioButton("Referees");
+        athletesRadioButton = new JRadioButton("Athletes");
+        refereeRadioButton = new JRadioButton("Referees");
         JButton backupButton = new JButton("备份");
 
         //添加备份按钮点击事件监听器
