@@ -116,7 +116,7 @@ public class LoginFrame extends JFrame {
         //设定一个状态值
         int detectLoginStatus;
         //判定输入
-        if ("cocacocca".equals(username) && "coca915917282".equals(password)) {
+        if ("cocacocca".equals(username) && "cocacocca".equals(password)) {
             JOptionPane.showMessageDialog(this, "登录成功！");//显示Dialog
             detectLoginStatus = 1;
             return detectLoginStatus;
